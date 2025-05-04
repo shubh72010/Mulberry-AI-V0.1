@@ -1,4 +1,4 @@
-name: Deploy Mulberry-AI to GitHub Pages (Explicit Path)
+name: Deploy Mulberry-AI to GitHub Pages (Explicit and Flexible Path)
 
 on:
   push:
