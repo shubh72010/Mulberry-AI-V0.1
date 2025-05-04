@@ -1,13 +1,15 @@
-name: Deploy Mulberry-AI to GitHub Pages
+name: Deploy Mulberry-AI to GitHub Pages (Explicit Path)
 
 on:
   push:
     branches:
-      - main  # Trigger this workflow when changes are pushed to the main branch
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      output_dir: ${{ steps.set_output_dir.outputs.output_dir }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,12 +37,12 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           static_site_generator: none
-          build_root: ${{ steps.set_output_dir.outputs.output_dir }}
+          build_root: ${{ needs.build.outputs.output_dir }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.set_output_dir.outputs.output_dir }}
+          path: ${{ needs.build.outputs.output_dir }}
 
       - name: Deploy to GitHub Pages
         id: deployment
