@@ -1,0 +1,53 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow when changes are pushed to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code from your repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # If you have a build process (e.g., for a static site generator), add it here
+      # For a simple HTML/CSS/JS site, you might not need a dedicated build step
+      - name: No Build Step (for simple static sites)
+        run: echo "No build necessary for this project"
+
+      # Define the output directory for deployment
+      - name: Set output directory
+        id: set_output_dir
+        run: echo "output_dir=." >> $GITHUB_OUTPUT
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Ensures the deploy job runs only after the build job is successful
+    permissions:
+      pages: write      # Allow writing to GitHub Pages
+      id-token: write  # Required for authenticating with GitHub Pages
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+        with:
+          # The directory to deploy to GitHub Pages
+          # If your HTML/CSS/JS are in the root, use '.'
+          # If they are in a folder like 'public', use 'public'
+          static_site_generator: none
+          build_root: ${{ steps.set_output_dir.outputs.output_dir }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.set_output_dir.outputs.output_dir }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
